@@ -77,4 +77,10 @@ Following the sequence's file, below we have a create of a ec2 instante:
 ```
 After this, just apply to create a infrastructure (In this step, we assume that you already have an aws account set up with the necessary credentials to deploy the aforementioned features).
 
+In the field `user_data` we declare a shell script that print hello word in a web server apache by default in the port 8080. This is to generate a endpoint `localhost:8080` that print hello word message.
 
+- Creating a load balance with autoscaling group
+
+In the file main.tf (tf is a extension of terraform file) there are whole provisioning of a infrastructure that we wish deploy. 
+
+We can use :  `terraform apply` after of `terraform init`.
