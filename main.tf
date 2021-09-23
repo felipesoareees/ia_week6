@@ -7,7 +7,7 @@ variable "server_port" {
   default     = 8080
 }
 
-#resource "aws_instance" "example" {
+#resource "aws_instance" "test" {
 #  ami   	 	  = "ami-00d3f22ff89c7323a"
 #  instance_type          = "t2.micro"
 #  vpc_security_group_ids = [aws_security_group.instance.id]
@@ -18,18 +18,18 @@ variable "server_port" {
 #              nohup busybox httpd -f -p 8080 &
 #              EOF
 #  tags = {
-#    Name = "terraform-example"
+#    Name = "terraform-test"
 #  }
 
 #}
 
 #output "public_ip" {
-#  value       = aws_instance.example.public_ip
+#  value       = aws_instance.test.public_ip
 #  description = "The public IP to access of the web server"
 #}
 
 resource "aws_security_group" "instance" {
-  name = "terraform-example-instance"
+  name = "terraform-test-instance"
 
   ingress{
     from_port   = var.server_port
@@ -39,7 +39,7 @@ resource "aws_security_group" "instance" {
   }
 }
 
-resource "aws_launch_configuration" "example" {
+resource "aws_launch_configuration" "test" {
   image_id        = "ami-00d3f22ff89c7323a"
   instance_type   = "t2.micro"
   security_groups = [aws_security_group.instance.id]
@@ -63,8 +63,8 @@ data "aws_subnet_ids" "default" {
  vpc_id = data.aws_vpc.default.id
 }
 
-resource "aws_autoscaling_group" "example" {
-  launch_configuration =  aws_launch_configuration.example.name
+resource "aws_autoscaling_group" "test" {
+  launch_configuration =  aws_launch_configuration.test.name
   vpc_zone_identifier  = data.aws_subnet_ids.default.ids
 
   target_group_arns = [aws_lb_target_group.asg.arn]
@@ -76,21 +76,21 @@ resource "aws_autoscaling_group" "example" {
 
   tag {
     key                 = "Name"
-    value               = "terraform-asg-example"
+    value               = "terraform-asg-test"
     propagate_at_launch = true
   }
 
 }
 
-resource "aws_lb" "example" {
-  name               = "terraform-asg-example"
+resource "aws_lb" "test" {
+  name               = "terraform-asg-test"
   load_balancer_type = "application"
   subnets            = data.aws_subnet_ids.default.ids
   security_groups    = [aws_security_group.alb.id]
 }
 
 resource "aws_lb_listener" "http" {
-  load_balancer_arn = aws_lb.example.arn
+  load_balancer_arn = aws_lb.test.arn
   port              = 80
   protocol          = "HTTP"
 
@@ -106,7 +106,7 @@ resource "aws_lb_listener" "http" {
 }
 
 resource "aws_security_group" "alb" {
-  name = "terraform-example-alb"
+  name = "terraform-test-alb"
 
   ingress {
     from_port   = 80
@@ -124,7 +124,7 @@ resource "aws_security_group" "alb" {
 }
 
 resource "aws_lb_target_group" "asg" {
-  name     = "terraform-asm-example"
+  name     = "terraform-asm-test"
   port     = var.server_port
   protocol = "HTTP"
   vpc_id   = data.aws_vpc.default.id
@@ -158,6 +158,6 @@ resource "aws_lb_listener_rule" "asg" {
 }
 
 output "alb_dns_name" {
- value       = aws_lb.example.dns_name
+ value       = aws_lb.test.dns_name
  description = "The domain name of the load balancer"
 }
